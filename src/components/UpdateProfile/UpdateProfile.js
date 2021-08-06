@@ -47,7 +47,6 @@ const Label = styled.label`
   width: 10%;
 `
 
-
 const Textarea = styled.textarea`
   width: 70%;
 `
@@ -66,26 +65,27 @@ function UpdateProfile() {
   } = useForm()
   const id = useParams()
   const [userDatas, setUserDatas] = useState({})
+  const [img, setImg] = useState()
+  const [url, setUrl] = useState()
 
   useEffect(() => {
     fetch(`http://localhost:3000/api/auth/update/` + id.id).then((res) =>
       res
         .json()
-        .then((userDatas) => setUserDatas(userDatas))
+        .then((userDatas) => {
+          setUserDatas(userDatas)
+        })
         .catch((error) => console.log(error))
     )
   }, [id])
 
-
-
   const onSubmit = (data) => {
+    const formData = new FormData()
+    formData.append('bio', data.bio)
+    formData.append('avatar', img)
     fetch('http://localhost:3000/api/auth/modify/' + id.id, {
       method: 'PUT',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-type': 'application/json',
-        Accept: 'application/json',
-      },
+      body: formData,
     })
       .then(function (res) {
         if (res.ok) {
@@ -93,8 +93,13 @@ function UpdateProfile() {
         }
       })
       .then((result) => {
-        console.log(data)
+        console.log(result)
       })
+  }
+
+  function handleChange(e) {
+    const files = e.target.files[0]
+    setImg(files)
   }
 
   return (
@@ -108,12 +113,17 @@ function UpdateProfile() {
         </SecondContainer>
         <ThirdContainer onSubmit={handleSubmit(onSubmit)}>
           <FourthContainer>
-            <Img src="" />
+            <Img src={userDatas.avatar} />
             <FifthContainer>
               <h1>
                 {userDatas.prenom} {userDatas.nom}
               </h1>
-              <input type="file" ></input>
+              <input
+                type="file"
+                accept="image/*"
+                {...register('avatar')}
+                onChange={(e) => handleChange(e)}
+              ></input>
             </FifthContainer>
           </FourthContainer>
           <SixthContainer>

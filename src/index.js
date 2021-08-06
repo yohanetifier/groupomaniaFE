@@ -41,6 +41,9 @@ ReactDOM.render(
       <Route path="/changepassword/:id">
         <ChangePassword />
       </Route>
+      <Route path="/publication/:id">
+
+      </Route>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

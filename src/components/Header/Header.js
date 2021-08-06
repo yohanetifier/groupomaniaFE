@@ -40,6 +40,9 @@ function Header() {
       <Container>
         <Logo src={logo} />
         <Menu>
+          <Link to={`/publication/${id.id}`}>
+          Publication 
+          </Link>
           <Link to={`/home/${id.id}`}>
             <List>{home}</List>
           </Link>
