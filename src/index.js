@@ -12,6 +12,8 @@ import Profil from './components/Profil/Profil'
 import UpdateProfile from './components/UpdateProfile/UpdateProfile'
 import DeleteProfile from './components/DeleteProfile/DeleteProfile'
 import ChangePassword from './components/ChangePassword/ChangePassword'
+import Post from './components/Post/Post'
+
 
 ReactDOM.render(
   <React.StrictMode>
@@ -42,7 +44,7 @@ ReactDOM.render(
         <ChangePassword />
       </Route>
       <Route path="/publication/:id">
-
+        <Post />
       </Route>
     </Router>
   </React.StrictMode>,
