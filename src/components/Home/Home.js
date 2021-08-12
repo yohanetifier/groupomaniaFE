@@ -1,38 +1,41 @@
 import Header from '../Header/Header'
 import PostCard from '../PostCard/PostCard'
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { useForm } from 'react-hook-form'
 
 const MainContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  
 `
 
 const SecondContainer = styled.div`
   width: 40%;
-  height: 500px;
+  height: 600px;
   border: 1px solid grey;
+  box-shadow: 5px 5px 10px 2px grey; 
 `
 
 const ThirdContainer = styled.div`
   display: flex;
-  margin-left: 20px; 
+  margin: 5px 0px 5px 20px; 
   height: 10%;
 `
 
 const FourthContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 20px; 
+  margin-left: 20px;
   height: 15%;
 `
 
 const Img = styled.img`
   width: 100%;
-  height: 65%;
+  height: 60%;
 `
 
 const Form = styled.form`
@@ -45,25 +48,40 @@ const Form = styled.form`
 
 const InputText = styled.input`
   width: 70%;
-  user-select: none; 
   border: none;
 `
 
 const SubmitButton = styled.input`
-border: none; 
-background-color: white; 
-cursor: pointer;
+  border: none;
+  background-color: white;
+  cursor: pointer;
 `
 
 const Description = styled.div`
-margin-left: 20px;
+  margin-left: 20px;
 `
+
+const Avatar = styled.img`
+border-radius: 50px;
+width: 50px; 
+margin-right: 10px;
+border: 2px solid grey; 
+`
+
+const PostId = styled.input``
 
 function Home() {
   const id = useParams()
   const [userDatas, setUserDatas] = useState({})
   const [posts, setPost] = useState([])
+  const [postId, setPostId] = useState('')
+  const [comments, setComments] = useState('')
   const [isLoading, setLoading] = useState(false)
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm()
 
   useEffect(() => {
     fetch(`http://localhost:3000/api/auth/update/` + id.id).then((res) =>
@@ -82,6 +100,27 @@ function Home() {
     setLoading(false)
   }, [])
 
+
+  const onSubmit = (data) => {
+    data.user_id = id.id
+    data.comments = comments
+    data.id = postId
+    fetch(`http://localhost:3000/api/post/action`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json()
+        }
+      })
+      .then((result) => console.log(data))
+  }
+  
   return (
     <div>
       <Header />,
@@ -89,24 +128,22 @@ function Home() {
         <p>Loading</p>
       ) : (
         posts.map((post) => (
-          <MainContainer>
+          <MainContainer key={post.id}>
             <SecondContainer>
               <ThirdContainer>
-                <img src="" />
-                <p>Username</p>
+                <Avatar src={post.user.avatar} />
+                <p>{post.user.prenom} {post.user.nom}</p>
               </ThirdContainer>
               <Img src={post.imageUrl} />
               <FourthContainer>
-                <p>Username </p>
+                <p>{post.user.prenom} {post.user.nom} </p>
                 <Description>{post.description}</Description>
               </FourthContainer>
-              <Form>
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <p>😃</p>
-                <InputText
-                  type="text"
-                  placeholder="Ajouter un commentaire..."
-                ></InputText>
-                <SubmitButton type="submit" value="Publier"></SubmitButton>
+                <InputText onChange={(e) => setComments(e.target.value)} onBlur={(e) => setPostId(post.id)} placeholder="Ajouter un commentaire..."></InputText>
+                <input type="submit" />
+                <Link to={`/post/${post.id}`}>Voir les commentaires</Link>
               </Form>
             </SecondContainer>
           </MainContainer>
