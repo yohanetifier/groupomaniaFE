@@ -15,7 +15,6 @@ import ChangePassword from './components/ChangePassword/ChangePassword'
 import Post from './components/Post/Post'
 import PostCard from './components/PostCard/PostCard'
 
-
 ReactDOM.render(
   <React.StrictMode>
     <Router>
@@ -37,7 +36,6 @@ ReactDOM.render(
         <Route path="/updateprofile/:id">
           <UpdateProfile />
         </Route>
-        
       </Switch>
       <Route path="/deleteprofile/:id">
         <DeleteProfile />
@@ -51,7 +49,6 @@ ReactDOM.render(
       <Route path="/post/:id">
         <PostCard />
       </Route>
-      
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

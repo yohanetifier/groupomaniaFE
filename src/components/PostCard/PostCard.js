@@ -40,11 +40,18 @@ const Img = styled.img`
 const FifthContainer = styled.div`
   height: 90%;
 `
+const TestContainer = styled.div`
+  border: 2px solid red;
+  height: 50px;
+  width: 100%;
+`
 
 function PostCard() {
   const [datas, setDatas] = useState([])
+  const [actions, setActions] = useState([])
   const [isLoading, setLoading] = useState(false)
   const id = useParams()
+
   useEffect(() => {
     setLoading(true)
     fetch(`http://localhost:3000/api/post/${id.id}`)
@@ -53,7 +60,11 @@ function PostCard() {
     setLoading(false)
   }, [])
 
-  console.log(datas)
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/post/action/${id.id}`)
+      .then((res) => res.json())
+      .then((result) => setActions(result))
+  }, [])
 
   return (
     <div>
@@ -80,6 +91,10 @@ function PostCard() {
                   {' '}
                   {data.user.prenom} {data.user.nom} {data.description}
                 </p>
+                
+                  {actions.map((action) => (
+                    <p key={action.comment_id}> {action.user.prenom} {action.user.prenom } {action.comments}</p>
+                  ))}
               </div>
             </SecondContainer>
           </MainContainer>

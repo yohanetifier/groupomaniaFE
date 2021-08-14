@@ -10,19 +10,17 @@ const MainContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-  
 `
 
 const SecondContainer = styled.div`
   width: 40%;
-  height: 600px;
   border: 1px solid grey;
-  box-shadow: 5px 5px 10px 2px grey; 
+  box-shadow: 5px 5px 10px 2px grey;
 `
 
 const ThirdContainer = styled.div`
   display: flex;
-  margin: 5px 0px 5px 20px; 
+  margin: 5px 0px 5px 20px;
   height: 10%;
 `
 
@@ -62,10 +60,10 @@ const Description = styled.div`
 `
 
 const Avatar = styled.img`
-border-radius: 50px;
-width: 50px; 
-margin-right: 10px;
-border: 2px solid grey; 
+  border-radius: 50px;
+  width: 50px;
+  margin-right: 10px;
+  border: 2px solid grey;
 `
 
 const PostId = styled.input``
@@ -75,6 +73,7 @@ function Home() {
   const [userDatas, setUserDatas] = useState({})
   const [posts, setPost] = useState([])
   const [postId, setPostId] = useState('')
+  const [actions, setActions] = useState([])
   const [comments, setComments] = useState('')
   const [isLoading, setLoading] = useState(false)
   const {
@@ -101,10 +100,16 @@ function Home() {
   }, [])
 
 
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/post/action/interaction`)
+      .then((res) => res.json())
+      .then((result) => setActions(result))
+  }, [])
+
   const onSubmit = (data) => {
     data.user_id = id.id
     data.comments = comments
-    data.id = postId
+    data.post_id = postId
     fetch(`http://localhost:3000/api/post/action`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -120,7 +125,7 @@ function Home() {
       })
       .then((result) => console.log(data))
   }
-  
+
   return (
     <div>
       <Header />,
@@ -132,18 +137,29 @@ function Home() {
             <SecondContainer>
               <ThirdContainer>
                 <Avatar src={post.user.avatar} />
-                <p>{post.user.prenom} {post.user.nom}</p>
+                <p>
+                  {post.user.prenom} {post.user.nom}
+                </p>
               </ThirdContainer>
-              <Img src={post.imageUrl} />
+              {post.imageUrl && <Img src={post.imageUrl} />}
+              {/* <Img src={post.imageUrl} /> */}
               <FourthContainer>
-                <p>{post.user.prenom} {post.user.nom} </p>
+                <p>
+                  {post.user.prenom} {post.user.nom}{' '}
+                </p>
                 <Description>{post.description}</Description>
               </FourthContainer>
               <Form onSubmit={handleSubmit(onSubmit)}>
                 <p>😃</p>
-                <InputText onChange={(e) => setComments(e.target.value)} onBlur={(e) => setPostId(post.id)} placeholder="Ajouter un commentaire..."></InputText>
+                <InputText
+                  onChange={(e) => setComments(e.target.value)}
+                  onFocus={(e) => setPostId(post.id)}
+                  placeholder="Ajouter un commentaire..."
+                ></InputText>
+                {actions.map((action) => (
+                  action.post_id === post.id && (<Link to={`/post/${post.id}`}>Voir les commentaires</Link>)
+                ))}
                 <input type="submit" />
-                <Link to={`/post/${post.id}`}>Voir les commentaires</Link>
               </Form>
             </SecondContainer>
           </MainContainer>
@@ -154,3 +170,7 @@ function Home() {
 }
 
 export default Home
+
+{
+  /* <Link to={`/post/${post.id}`}>Voir les commentaires</Link> */
+}

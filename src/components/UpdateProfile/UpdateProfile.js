@@ -57,6 +57,18 @@ const SubmitButton = styled.button`
   margin-left: 50px;
 `
 
+const SeventhContainer = styled.div`
+display: flex; 
+align-items: center; 
+`
+
+const OldBio = styled.div`
+margin-right: 10px;
+`
+const Mail = styled.p`
+margin-right: 10px; 
+`
+
 function UpdateProfile() {
   const {
     register,
@@ -66,6 +78,7 @@ function UpdateProfile() {
   const id = useParams()
   const [userDatas, setUserDatas] = useState({})
   const [img, setImg] = useState()
+  const [preview, setPreview] = useState('')
   const [url, setUrl] = useState()
 
   useEffect(() => {
@@ -77,12 +90,22 @@ function UpdateProfile() {
         })
         .catch((error) => console.log(error))
     )
-  }, [id])
+  }, [id.id])
 
   const onSubmit = (data) => {
     const formData = new FormData()
-    formData.append('bio', data.bio)
-    formData.append('avatar', img)
+    if (img){
+      formData.append('avatar', img)
+    }
+
+    if(data.bio){
+      formData.append('bio', data.bio)
+    }
+
+
+    /* formData.append('bio', data.bio) */
+    /* img ? (formData.append('avatar', img)) */
+    /* formData.append('avatar', img) */
     fetch('http://localhost:3000/api/auth/modify/' + id.id, {
       method: 'PUT',
       body: formData,
@@ -100,6 +123,8 @@ function UpdateProfile() {
   function handleChange(e) {
     const files = e.target.files[0]
     setImg(files)
+    const preview = URL.createObjectURL(files)
+    setPreview(preview)
   }
 
   return (
@@ -113,7 +138,7 @@ function UpdateProfile() {
         </SecondContainer>
         <ThirdContainer onSubmit={handleSubmit(onSubmit)}>
           <FourthContainer>
-            <Img src={userDatas.avatar} />
+            <Img src={preview ? (preview) : (userDatas.avatar)} />
             <FifthContainer>
               <h1>
                 {userDatas.prenom} {userDatas.nom}
@@ -127,9 +152,13 @@ function UpdateProfile() {
             </FifthContainer>
           </FourthContainer>
           <SixthContainer>
-            <p>Mail: </p>
+            <Mail>Mail: </Mail>
             <p>{userDatas.email}</p>
           </SixthContainer>
+          <SeventhContainer>
+          <OldBio>Ancienne bio: </OldBio>
+          <p>{userDatas.bio}</p>
+          </SeventhContainer>
           <SixthContainer>
             <Label>bio</Label>
             <Textarea type="text" {...register('bio')}></Textarea>

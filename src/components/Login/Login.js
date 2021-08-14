@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
 import { useHistory, Route, Redirect } from 'react-router-dom'
 
-
 const MainContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -49,13 +48,10 @@ const authentication = {
   },
 }
 
-
-export function SecuredRoute({ children, ...rest }){
-  if (authentication.isLoggedIn === true){
-    return (
-      <Route {...rest}>{ children }</Route>
-    )
-  }else {
+export function SecuredRoute({ children, ...rest }) {
+  if (authentication.isLoggedIn === true) {
+    return <Route {...rest}>{children}</Route>
+  } else {
     return <Redirect to="/login"></Redirect>
   }
 }
@@ -80,6 +76,9 @@ function Login() {
       .then((result) => {
         if (result) {
           authentication.onAuthentication()
+          localStorage.clear()
+          localStorage.setItem('userId', result.userId)
+          localStorage.setItem('token', result.token)
           history.push(`/home/${result.userId}`)
         }
       })

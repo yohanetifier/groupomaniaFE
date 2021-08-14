@@ -71,8 +71,28 @@ function Signup() {
       })
       .then((result) => {
         if (result) {
+          fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json()
+        }
+      })
+      .then((result) => {
+        if (result) {
           authentication.onAuthentication()
+          localStorage.clear()
+          localStorage.setItem('userId', result.userId)
+          localStorage.setItem('token', result.token)
           history.push(`/updateprofile/${result.userId}`)
+        }
+      })
         }
       })
   }

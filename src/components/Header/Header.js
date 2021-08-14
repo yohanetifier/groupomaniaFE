@@ -34,19 +34,19 @@ function Header() {
   const home = 'Accueil'
   const account = 'Mon compte'
  
-  
+
   return (
     <div>
       <Container>
         <Logo src={logo} />
         <Menu>
-          <Link to={`/publication/${id.id}`}>
+          <Link to={`/publication/${localStorage.getItem('userId')}`}>
           Publication 
           </Link>
-          <Link to={`/home/${id.id}`}>
+          <Link to={`/home/${localStorage.getItem('userId')}`}>
             <List>{home}</List>
           </Link>
-          <Link to={`/profile/${id.id}`}>
+          <Link to={`/profile/${localStorage.getItem('userId')}`}>
             <List>{account}</List>
           </Link>
         </Menu>
