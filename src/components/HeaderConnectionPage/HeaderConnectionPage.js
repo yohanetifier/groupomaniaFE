@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom'
 
 const Container = styled.nav`
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  align-items: center; 
   background-color: #102341; 
+  height: 150px; 
 `
 
 const Logo = styled.img`
@@ -17,15 +17,17 @@ const Logo = styled.img`
 
 const Menu = styled.ul`
   display: flex;
-  justify-content: space-between;
-  width: 20%;
+  justify-content: space-evenly;
+  width: 50%;
+  @media (max-width: 375px){
+    display: none;
+  }
 `
 
 const List = styled.li`
   list-style-type: none; 
   color: white; 
 `
-
 
 function HeaderConnectionPage() {
   const signIn = "S'inscrire"
@@ -34,10 +36,7 @@ function HeaderConnectionPage() {
       <div>
     <Container>
       <Logo src={logo} />,
-      <Menu>
-        <Link to="/"><List>{signIn}</List></Link>
-        <Link to="/login"><List>{logIn}</List></Link>
-      </Menu>
+      
     </Container>
     
     </div>

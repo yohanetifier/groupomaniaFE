@@ -31,6 +31,9 @@ function ChangePassword() {
 
     useEffect(() => {
         fetch(`http://localhost:3000/api/auth/getPassword/` + id.id, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
         }).then((res) =>
           res
             .json()
@@ -48,7 +51,8 @@ function ChangePassword() {
                 body:JSON.stringify(data),
                 headers: {
                     "Content-Type": "application/json", 
-                    "Accept": "application/json" 
+                    "Accept": "application/json", 
+                      Authorization: 'Bearer ' + localStorage.getItem('token')
                 },
             }).then(function(res){
                 if(res.ok){

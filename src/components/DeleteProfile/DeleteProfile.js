@@ -55,7 +55,10 @@ function DeleteProfile() {
 
         if(answer){
             fetch('http://localhost:3000/api/auth/deleteprofile/'+ id.id, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers : {
+                  Authorization: 'Bearer ' + localStorage.getItem('token')
+                }
             })
             .then((res) => res.json())
             .then((result) => console.log(result))

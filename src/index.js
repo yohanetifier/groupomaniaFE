@@ -2,12 +2,17 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom'
 import Signup from './components/Signup/Signup'
 import HeaderConnectionPage from './components/HeaderConnectionPage/HeaderConnectionPage'
 import Login from './components/Login/Login'
 import Home from './components/Home/Home'
-import { SecuredRoute } from './components/Login/Login'
+import { SecuredRoute } from './components/ProvideAuth/ProvideAuth'
 import Profil from './components/Profil/Profil'
 import UpdateProfile from './components/UpdateProfile/UpdateProfile'
 import DeleteProfile from './components/DeleteProfile/DeleteProfile'
@@ -19,36 +24,38 @@ ReactDOM.render(
   <React.StrictMode>
     <Router>
       <Route exact path="/">
-        <HeaderConnectionPage />
         <Signup />
       </Route>
       <Route path="/login">
-        <HeaderConnectionPage />
         <Login />
       </Route>
       <Switch>
         <SecuredRoute path="/home/:id/">
           <Home />
         </SecuredRoute>
-        <Route path="/profile/:id">
+        <SecuredRoute path="/profile/:id">
           <Profil />
-        </Route>
-        <Route path="/updateprofile/:id">
+        </SecuredRoute>
+        <SecuredRoute path="/updateprofile/:id">
           <UpdateProfile />
+        </SecuredRoute>
+        {/* </Switch> */}
+        <SecuredRoute path="/deleteprofile/:id">
+          <DeleteProfile />
+        </SecuredRoute>
+        <SecuredRoute path="/changepassword/:id">
+          <ChangePassword />
+        </SecuredRoute>
+        <SecuredRoute path="/publication/:id">
+          <Post />
+        </SecuredRoute>
+        <SecuredRoute path="/post/:id">
+          <PostCard />
+        </SecuredRoute>
+        <Route path="*">
+          <Redirect to="/login" />
         </Route>
       </Switch>
-      <Route path="/deleteprofile/:id">
-        <DeleteProfile />
-      </Route>
-      <Route path="/changepassword/:id">
-        <ChangePassword />
-      </Route>
-      <Route path="/publication/:id">
-        <Post />
-      </Route>
-      <Route path="/post/:id">
-        <PostCard />
-      </Route>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

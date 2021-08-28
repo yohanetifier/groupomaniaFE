@@ -1,12 +1,23 @@
 import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
+import Button from '@material-ui/core/Button'
+import logo from '../../assets/logos/icon-left-font-monochrome-black.png'
+
+const Img = styled.img`
+  height: 100px;
+  text-align: center;
+`
+const ContainerLogo = styled.div`
+display: flex; 
+justify-content: center;
+`
 
 const MainContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 400px;
+  height: 610px;
 `
 
 const Form = styled.form`
@@ -16,7 +27,8 @@ const Form = styled.form`
   width: 30%;
   height: 100%;
   box-shadow: 3px 3px 3px 3px grey;
-  margin-top: 20px;
+  border-radius: 10px;
+  min-width: 300px;
 `
 
 const Container = styled.div`
@@ -30,11 +42,39 @@ const Label = styled.label`
 `
 const Input = styled.input`
   width: 90%;
+  height: 30px;
   margin-left: 20px;
+  border: 1px solid #dddfe2;
+  border-radius: 5px;
+  outline-style: none;
 `
-const Button = styled.input`
-  width: 92%;
-  margin-left: 20px;
+const ButtonSubmit = styled(Button)`
+  width: 90%;
+`
+const FirstContainer = styled.div`
+  border-bottom: 1px solid grey;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -50px;
+`
+const Title = styled.h1``
+const Sentence = styled.p`
+  margin-top: -10px;
+  color: #a4a8ad;
+`
+const AlreadyHaveAccount = styled(Link)`
+  text-decoration: none;
+  color: #1877f2;
+  text-align: center;
+`
+const SecondContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`
+const ContainerButton = styled.div`
+  display: flex;
+  justify-content: center;
 `
 
 const authentication = {
@@ -72,27 +112,26 @@ function Signup() {
       .then((result) => {
         if (result) {
           fetch('http://localhost:3000/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    })
-      .then(function (res) {
-        if (res.ok) {
-          return res.json()
-        }
-      })
-      .then((result) => {
-        if (result) {
-          authentication.onAuthentication()
-          localStorage.clear()
-          localStorage.setItem('userId', result.userId)
-          localStorage.setItem('token', result.token)
-          history.push(`/updateprofile/${result.userId}`)
-        }
-      })
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          })
+            .then(function (res) {
+              if (res.ok) {
+                return res.json()
+              }
+            })
+            .then((result) => {
+              if (result) {
+                authentication.onAuthentication()
+                localStorage.setItem('userId', result.userId)
+                localStorage.setItem('token', result.token)
+                history.push(`/updateprofile/${result.userId}`)
+              }
+            })
         }
       })
   }
@@ -104,6 +143,13 @@ function Signup() {
   return (
     <MainContainer>
       <Form onSubmit={handleSubmit(onSubmit)}>
+        <ContainerLogo>
+          <Img src={logo} />
+        </ContainerLogo>
+        <FirstContainer>
+          <Title>Créer un compte</Title>
+          <Sentence>C'est rapide et facile</Sentence>
+        </FirstContainer>
         <Container>
           <Label>Nom: </Label>
           <Input
@@ -113,11 +159,6 @@ function Signup() {
               pattern: /^[a-zA-Z]{3,20}$/,
             })}
           ></Input>
-          {errors.nom ? (
-            <span> Les données ne sont pas valides</span>
-          ) : (
-            <span> Les données sont valides </span>
-          )}
         </Container>
         <Container>
           <Label>Prénom: </Label>
@@ -160,7 +201,16 @@ function Signup() {
           ></Input>
           {/* {!match && <span>Password not matched</span>} */}
         </Container>
-        <Button type="submit" value="s'enregistrer"></Button>
+        <ContainerButton>
+          <ButtonSubmit type="submit" variant="contained" color="primary" >
+            S'inscrire
+          </ButtonSubmit>
+        </ContainerButton>
+        <SecondContainer>
+          <AlreadyHaveAccount to="/login">
+            Vous avez déjà un compte?
+          </AlreadyHaveAccount>
+        </SecondContainer>
       </Form>
     </MainContainer>
   )
