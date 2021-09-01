@@ -28,7 +28,7 @@ const ThirdContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 50%;
-  height: 100%; 
+  height: 100%;
   border-right: 1px solid #dddfe2;
   @media (max-width: 600px) {
     width: 100%;
@@ -46,9 +46,9 @@ const Avatar = styled.div`
   background-color: #2296f3;
   border-radius: 50%;
   width: 50px;
-  height: 50px; 
+  height: 50px;
   margin-right: 10px;
-  margin-left: 20px; 
+  margin-left: 20px;
 `
 const Img = styled.img`
   width: 100%;
@@ -89,7 +89,10 @@ function PostCard() {
   const [actions, setActions] = useState([])
   const [userDatas, setUserDatas] = useState([])
   const [deleteComment, setDeleteComment] = useState()
+  const [allPost, setAllPost] = useState([])
+  const [allAction, setAllAction] = useState([])
   const [isLoading, setLoading] = useState(false)
+  const userOnline = JSON.parse(localStorage.getItem('userId'))
   const id = useParams()
   const MobileDesign = useMediaQuery('(max-width: 600px)')
 
@@ -180,11 +183,11 @@ function PostCard() {
               <SixContainer>
                 {data.imageUrl && (
                   <Description>
-                  <NameContainer>
-                    {data.user.prenom} {data.user.nom}
-                  </NameContainer>
-                  <Comment>{data.description}</Comment>{' '}
-                </Description>
+                    <NameContainer>
+                      {data.user.prenom} {data.user.nom}
+                    </NameContainer>
+                    <Comment>{data.description}</Comment>{' '}
+                  </Description>
                 )}
 
                 <SeventhContainer>
@@ -195,11 +198,18 @@ function PostCard() {
                         {action.user.prenom} {action.user.nom}{' '}
                         <Comment>{action.comments} </Comment>
                       </NameContainer>
-                      {userDatas.admin && (
+                      {/* {userDatas.admin  && (
                         <button onClick={() => handleClick(action.comment_id)}>
                           <DeleteIcon />
                         </button>
-                      )}
+                      )}  */}
+                      {action.post.user_id === userOnline ||
+                      action.user_id === userOnline ||
+                      userDatas.admin ? (
+                        <button onClick={() => handleClick(action.comment_id)}>
+                          <DeleteIcon />
+                        </button>
+                      ) : null}
                     </Comments>
                   ))}
                 </SeventhContainer>

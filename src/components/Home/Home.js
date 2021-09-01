@@ -22,6 +22,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import SendIcon from '@material-ui/icons/Send'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const rotate = keyframes`
     from {
@@ -44,7 +45,7 @@ export const Loader = styled.div`
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 500,
+    width: 700,
   },
   media: {
     height: '300px',
@@ -53,38 +54,64 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: blue[500],
   },
+  author: {
+    fontWeight: 'bold',
+    color: 'black',
+    textDecoration: 'none',
+  },
 }))
+
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: #fafafa;
+  @media (max-width: 900px) {
+    justify-content: center;
+  }
+`
 
 const MainContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   margin-top: 20px;
   min-width: 280px;
 `
-
-const SecondContainer = styled.div`
-  width: 40%;
-  border: 1px solid grey;
-  box-shadow: 5px 5px 10px 2px grey;
-`
-
-const ThirdContainer = styled.div`
+const ContainerRight = styled.div`
   display: flex;
-  margin: 5px 0px 5px 20px;
-  height: 10%;
+  flex-direction: column;
+  width: 30%;
+  margin-top: 20px;
+  height: 100%;
+  @media (max-width: 900px) {
+    display: none;
+  }
 `
-
-const FourthContainer = styled.div`
+const ContainerUser = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 20px;
-  height: 15%;
-`
-
-const Img = styled.img`
   width: 100%;
-  height: 60%;
+  & > p {
+    margin-left: 10px;
+  }
+`
+const ContainerUsersPlatform = styled(Link)`
+  display: flex;
+  text-decoration: none;
+  color: black;
+  align-items: center;
+  width: 100%;
+  & > p {
+    margin-left: 10px;
+  }
+`
+const ContainerLeft = styled.div`
+  width: 65%;
+  height: 100%;
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `
 
 const Form = styled.form`
@@ -92,13 +119,11 @@ const Form = styled.form`
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid grey;
-  height: 9%;
-`
-
-const InputText = styled.input`
-  width: 50%;
-  border: none;
-  outline: none;
+  & > input {
+    width: 50%;
+    border: none; 
+    outline: none;
+  }
 `
 
 const SubmitButton = styled(Button)`
@@ -118,37 +143,20 @@ const NoPostContainer = styled.div`
   justify-content: center;
   align-items: center;
 `
-const ButtonComment = styled(Button)`
-  margin-left: 10px;
-  width: 20%;
-`
-const PostLink = styled(Link)`
-  text-decoration: none;
-  color: black;
-`
-const RemovePost = styled(Button)``
-const MenuButton = styled(Button)``
 const ImgAvatar = styled.img`
   width: 100%;
   height: 100%;
 `
-
-/* const Avatar = styled.img`
-  border-radius: 50px;
-  width: 50px;
-  margin-right: 10px;
-  border: 2px solid grey;
-` */
 const LoaderContainer = styled.div`
-width: 100%; 
-height: 400px; 
-display: flex; 
-justify-content: center;
-align-items:center; 
+  width: 100%;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 const Logo = styled.img`
-width: 50%; 
-height: 100%;
+  width: 30%;
+  height: 100%;
 `
 const PostId = styled.input``
 
@@ -157,6 +165,8 @@ function Home() {
   const history = useHistory()
   const id = useParams()
   const [userDatas, setUserDatas] = useState({})
+  const [users, setUsers] = useState([])
+  const realUsers = users ? users.filter((user) => user.id != id.id) : null
   const [posts, setPost] = useState([])
   const [postIdArray, setPostIdArray] = useState([])
   const [postId, setPostId] = useState('')
@@ -165,9 +175,6 @@ function Home() {
   const [comments, setComments] = useState('')
   const [isLoading, setLoading] = useState(false)
   const textInput = useRef(null)
-  const resetTextInput = () => {
-    console.log(textInput)
-  }
   const MobileDesign = useMediaQuery('(max-width: 600px)')
   const newPublication = () => {
     history.push(`/publication/${id.id}`)
@@ -187,7 +194,19 @@ function Home() {
   const closeMenu = () => {
     setAnchorEl(null)
   }
- 
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/auth/users/`, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    }).then((res) =>
+      res
+        .json()
+        .then((users) => setUsers(users))
+        .catch((error) => console.log(error))
+    )
+  })
 
   useEffect(() => {
     setLoading(true)
@@ -228,7 +247,6 @@ function Home() {
     setLoading(false)
   }, [actions])
 
-  
   const handleClick = () => {
     setLoading(true)
     fetch(`http://localhost:3000/api/post/delete/` + deletePost, {
@@ -241,8 +259,7 @@ function Home() {
       .then((result) => console.log(result))
     setLoading(false)
   }
-  
-  
+  const inputText = document.querySelectorAll('input')
 
   const onSubmit = (data) => {
     setLoading(true)
@@ -264,19 +281,20 @@ function Home() {
         }
       })
       .then((result) => {
-        
+        inputText.forEach((input) => (input.value = ''))
       })
     setLoading(false)
   }
 
- 
   return (
     <div>
       <Header />
       {/* {isLoading ? (<Loader />) : null} */}
       {posts.length === 0 ? (
-        <LoaderContainer><Logo src={icon} /></LoaderContainer>
-        
+        <LoaderContainer>
+          <Logo src={icon} />
+        </LoaderContainer>
+      ) : (
         /* <NoPostContainer>
           <NoPost>Commencer à intéragir avec la communauté</NoPost>
           <Button
@@ -287,48 +305,51 @@ function Home() {
             Créer une nouvelle publication
           </Button>
         </NoPostContainer> */
-      ) : (
-        posts.map((post) => (
-          <MainContainer key={post.id}>
-            <Card className={classes.root}>
-              <CardHeader
-                avatar={
-                  <Avatar className={classes.avatar}>
-                    {post.user.avatar && <ImgAvatar src={post.user.avatar} />}
-                  </Avatar>
-                }
-                action={
-                  <div>
-                    {}
-                    {userDatas.admin && (
-                      <Button
-                        onFocus={() => setDeletePost(post.id)}
-                        onClick={() => handleClick(post.id)}
-                      >
-                        {MobileDesign ? (
-                          <DeleteIcon color="primary" />
-                        ) : (
-                          'Supprimer'
+        <Container>
+          <ContainerLeft>
+            {posts.map((post) => (
+              <MainContainer key={post.id}>
+                <Card className={classes.root}>
+                  <CardHeader
+                    avatar={
+                      <Avatar className={classes.avatar}>
+                        {post.user.avatar && (
+                          <ImgAvatar src={post.user.avatar} />
                         )}
-                      </Button>
-                    )}
+                      </Avatar>
+                    }
+                    action={
+                      <div>
+                        {}
+                        {userDatas.admin && (
+                          <Button
+                            onFocus={() => setDeletePost(post.id)}
+                            onClick={() => handleClick(post.id)}
+                          >
+                            {MobileDesign ? (
+                              <DeleteIcon color="primary" />
+                            ) : (
+                              'Supprimer'
+                            )}
+                          </Button>
+                        )}
 
-                    {actions.map((action) =>
-                      action.post_id === post.id &&
-                      !postIdArray.includes(post.id)
-                        ? postIdArray.push(post.id)
-                        : null
-                    )}
-                    {postIdArray.includes(post.id) && (
-                      <Link
-                        variant="contained"
-                        color="primary"
-                        to={`/post/${post.id}`}
-                      >
-                        <MoreVertIcon color="primary"></MoreVertIcon>
-                      </Link>
-                    )}
-                    {/*  <Menu
+                        {actions.map((action) =>
+                          action.post_id === post.id &&
+                          !postIdArray.includes(post.id)
+                            ? postIdArray.push(post.id)
+                            : null
+                        )}
+                        {postIdArray.includes(post.id) && (
+                          <Link
+                            variant="contained"
+                            color="primary"
+                            to={`/post/${post.id}`}
+                          >
+                            <MoreVertIcon color="primary"></MoreVertIcon>
+                          </Link>
+                        )}
+                        {/*  <Menu
                       id="simple-menu"
                       anchorEl={anchorEl}
                       keepMounted
@@ -347,39 +368,61 @@ function Home() {
                         </MenuItem>
                       )}
                     </Menu> */}
-                  </div>
-                }
-                title={`${post.user.prenom} ${post.user.nom}`}
-                subheader=""
-              />
-              {post.imageUrl && (
-                <CardMedia className={classes.media} image={post.imageUrl} />
-              )}
-
-              <CardContent>
-                <Typography variant="body2" color="textprimary" component="p">
-                  {post.user.prenom} {post.user.nom} {post.description}
-                </Typography>
-                <Form onSubmit={handleSubmit(onSubmit)} className="frm">
-                  <p>😃</p>
-                  <InputText
-                    onChange={(e) => setComments(e.target.value)}
-                    onFocus={(e) => setPostId(post.id)}
-                    placeholder="Ajouter un commentaire..."
-                    onBlur={(e) => 
-                      console.log(e.target.value)
+                      </div>
                     }
-                    required
-                  ></InputText>
+                    title={
+                      <Link
+                        to={`/profile/${post.user_id}`}
+                        className={classes.author}
+                      >
+                        {post.user.prenom} {post.user.nom}
+                      </Link>
+                    }
+                    subheader=""
+                  />
+                  {post.imageUrl && (
+                    <CardMedia
+                      className={classes.media}
+                      image={post.imageUrl}
+                    />
+                  )}
 
-                  <SubmitButton type="submit" >
-                    {MobileDesign ? <SendIcon color="primary" /> : 'Publier'}
-                  </SubmitButton>
-                </Form>
-              </CardContent>
-            </Card>
+                  <CardContent>
+                    <Typography
+                      variant="body2"
+                      color="textprimary"
+                      component="p"
+                    >
+                      <span className={classes.author}>
+                        {post.user.prenom} {post.user.nom}
+                      </span>{' '}
+                      {post.description}
+                    </Typography>
+                    <Form onSubmit={handleSubmit(onSubmit)}>
+                      <p>😃</p>
+                      <input
+                        id={postId}
+                        onChange={(e) => setComments(e.target.value)}
+                        onFocus={(e) => setPostId(post.id)}
+                        placeholder="Ajouter un commentaire..."
+                        required
+                      ></input>
 
-            {/* <SecondContainer>
+                      <SubmitButton
+                        type="submit"
+                        disabled={comments ? '' : 'true'}
+                      >
+                        {MobileDesign ? (
+                          <SendIcon color="primary" />
+                        ) : (
+                          'Publier'
+                        )}
+                      </SubmitButton>
+                    </Form>
+                  </CardContent>
+                </Card>
+
+                {/* <SecondContainer>
               <ThirdContainer>
                 <Avatar src={post.user.avatar ? post.user.avatar : client} />
                 <p>
@@ -422,8 +465,27 @@ function Home() {
                 )}
               </Form>
             </SecondContainer> */}
-          </MainContainer>
-        ))
+              </MainContainer>
+            ))}
+          </ContainerLeft>
+          <ContainerRight>
+            <ContainerUser>
+              <Avatar src={userDatas.avatar} />
+              <p>
+                {userDatas.prenom} {userDatas.nom}
+              </p>
+            </ContainerUser>
+            {users.length > 0 && <h2>Suggestions pour vous</h2>}
+            {realUsers.map((user) => (
+              <ContainerUsersPlatform to={`/profile/${user.id}`}>
+                <Avatar src={user.avatar} />
+                <p>
+                  {user.prenom} {user.nom}
+                </p>
+              </ContainerUsersPlatform>
+            ))}
+          </ContainerRight>
+        </Container>
       )}
     </div>
   )

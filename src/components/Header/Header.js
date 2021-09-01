@@ -10,6 +10,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Button from '@material-ui/core/Button'
+import SearchBar from '../SearchBar/SearchBar'
 
 const Container = styled.nav`
   display: flex;
@@ -65,24 +66,12 @@ const MenuLink = styled(Link)`
   text-decoration: none;
 `
 const UpdateProfile = styled(Link)`
-text-decoration: none; 
-color: black; 
+  text-decoration: none;
+  color: black;
 `
 const MyAccount = styled.p`
-color: white; 
+  color: white;
 `
-const authentication = {
-  isLoggedIn: false,
-  onAuthentication() {
-    this.isLoggedIn = true
-  },
-  Disconnect() {
-    this.isLoggedIn = false
-  },
-  getLoginStatus() {
-    return this.isLoggedIn
-  },
-}
 
 function Header() {
   const id = useParams()
@@ -90,9 +79,9 @@ function Header() {
   const account = 'Mon compte'
   const history = useHistory()
   const MobileResponsiveDesign = useMediaQuery('(max-width: 600px)')
+  const UnderNineHundred = useMediaQuery('(max-width: 900px)')
   const [anchorEl, setAnchorEl] = useState(null)
   function handleDisconnect() {
-    authentication.Disconnect()
     localStorage.clear()
     history.push('/login')
   }
@@ -106,6 +95,7 @@ function Header() {
     <div>
       <Container>
         <Logo src={logo} />
+        {!UnderNineHundred && <SearchBar />}
         <Nav>
           <MenuLink to={`/home/${localStorage.getItem('userId')}`}>
             {MobileResponsiveDesign ? <ButtonHomeIcon /> : 'Accueil'}
@@ -117,14 +107,44 @@ function Header() {
               'Publication'
             )}
           </MenuLink>
+
           {/* <MenuLink to={`/profile/${localStorage.getItem('userId')}`}>
               {MobileResponsiveDesign ? (<ButtonAccountCircleIcon/>) : ('Mon compte')}
             </MenuLink> */}
-            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>{MobileResponsiveDesign ? (<ButtonAccountCircleIcon/>) : (<MyAccount>Mon compte</MyAccount>)}</Button>
-            <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem onClick={handleClose}><UpdateProfile to={`/updateprofile/${localStorage.getItem('userId')}`}>Modifier le profil</UpdateProfile></MenuItem>
-              <MenuItem onClick={handleClose}><Button onClick={() => handleDisconnect()}>Deconnexion</Button></MenuItem>
-            </Menu>
+          <Button
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            {MobileResponsiveDesign ? (
+              <ButtonAccountCircleIcon />
+            ) : (
+              <MyAccount>Mon compte</MyAccount>
+            )}
+          </Button>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>
+              <UpdateProfile to={`/profile/${localStorage.getItem('userId')}`}>
+                Mon Profil
+              </UpdateProfile>
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <UpdateProfile
+                to={`/updateprofile/${localStorage.getItem('userId')}`}
+              >
+                Modifier le profil
+              </UpdateProfile>
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <Button onClick={() => handleDisconnect()}>Deconnexion</Button>
+            </MenuItem>
+          </Menu>
         </Nav>
       </Container>
     </div>
