@@ -6,6 +6,9 @@ import { useState, useEffect } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble'
+import Avatar from '@material-ui/core/Avatar'
+import SettingsIcon from '@material-ui/icons/Settings'
+import useMediaQuery from '@material-ui/core/UseMediaQuery'
 
 const Img = styled.img`
   width: 200px;
@@ -16,38 +19,51 @@ const Img = styled.img`
 const MainContainer = styled.div`
   display: flex;
   justify-content: center;
+
   margin-top: 30px;
-  @media(max-width: 600px){
+  margin-left: 20px;
+  @media (max-width: 600px) {
     flex-direction: column;
+    margin-left: 0px;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
   }
 `
 
 const FirstContainer = styled.div`
-@media(max-width: 600px){
-  height: 10%; 
-  width: 50%;
-  & > img {
-    width: 100%; 
-    height: 100%; 
-
+  & > div {
+    width: 100%;
+    height: 100%;
   }
-}
+  @media (max-width: 600px) {
+    height: 10%;
+    width: 50%;
+    & > div {
+      width: 100%;
+      height: 100%;
+    }
+  }
 `
 
 const SecondContainer = styled.div`
   margin-left: 100px;
-  width: 40%;
-  
+  width: 80%;
+  @media (max-width: 600px) {
+    width: 80%;
+  }
+  @media (max-width: 375px) {
+    width: 100%;
+    margin-left: 0px;
+  }
 `
 
 const ThirdContainer = styled.div`
   display: flex;
   align-items: center;
   height: 30%;
-  & > h1 {
-    margin-right: 20px;
+  width: 100%;
+  @media (max-width: 600px) {
+    justify-content: center;
   }
 `
 const Bio = styled.h2`
@@ -60,8 +76,8 @@ const FourthContainer = styled.div`
   margin-left: 20px;
   flex-wrap: wrap;
   position: relative;
-  @media(max-width: 600px){
-    justify-content: center; 
+  @media (max-width: 600px) {
+    justify-content: center;
   }
 `
 const PostContainer = styled.div`
@@ -100,11 +116,13 @@ justify-content: center;
 align-items: center; 
 color: black; 
 text-decoration: none;
-}
 & > img{
   width: 100%; 
   height: 100%; 
 }
+}
+
+
 & button {
   & + div {
     display: flex; 
@@ -123,6 +141,9 @@ function Profil() {
   const [counterAction, setCounterAction] = useState([])
   const userOnline = JSON.parse(localStorage.getItem('userId'))
   const history = useHistory()
+  const tabletDesign = useMediaQuery('(max-width: 600px)')
+
+  /* Fonction pour avoir les données users en cours */
 
   useEffect(() => {
     fetch(`http://localhost:3000/api/auth/update/` + id.id, {
@@ -137,6 +158,8 @@ function Profil() {
     )
   }, [id])
 
+  /* Fonction pour avoir les posts d'un utilisateur avec son id */
+
   useEffect(() => {
     fetch(`http://localhost:3000/api/post/users/` + id.id, {
       headers: {
@@ -146,7 +169,9 @@ function Profil() {
       .then((res) => res.json())
       .then((userPost) => setUserPost(userPost))
       .catch((error) => console.log(error))
-  })
+  }, [id])
+
+  /* Fonction pour supprimer le post avec son id */
 
   const handleClick = () => {
     fetch(`http://localhost:3000/api/post/delete/` + deletePost, {
@@ -158,6 +183,7 @@ function Profil() {
       .then((res) => res.json())
       .then((result) => console.log(result))
   }
+  /* Fonction pour faire un compteur pour les commentaires */
 
   useEffect(() => {
     fetch(`http://localhost:3000/api/post/action/post/` + counterForPost, {
@@ -170,28 +196,24 @@ function Profil() {
       .catch((error) => console.log(error))
   }, [counterForPost])
 
-  
   return (
     <div>
       <Header />
       <div>
         <MainContainer>
           <FirstContainer>
-            <Img src={userDatas.avatar} />
+            <Avatar src={userDatas.avatar} />
           </FirstContainer>
           <SecondContainer>
             <ThirdContainer>
               <h1>
                 {userDatas.prenom} {userDatas.nom}
               </h1>
-              {userOnline === parseInt(id.id)  && <Button
-                variant="contained"
-                color="primary"
-                href={`/updateprofile/${id.id}`}
-              >
-                Modifier le profil
-              </Button>}
-              
+              {userOnline === parseInt(id.id) && (
+                <Button href={`/updateprofile/${id.id}`}>
+                  <SettingsIcon></SettingsIcon>
+                </Button>
+              )}
             </ThirdContainer>
             <Bio>{userDatas.bio}</Bio>
           </SecondContainer>
@@ -201,24 +223,31 @@ function Profil() {
             <PostContainer
               to={`/post/${post.id}`}
               onMouseEnter={() => setCounterForPost(post.id)}
-              
             >
-              {post.imageUrl ? (<Link to={`/post/${post.id}`} ><img src={post.imageUrl} /></Link>) : (<Link to={`/post/${post.id}`}><p>{post.description}</p></Link>) }
-              
-              <div>
-              {post.user_id === userOnline && (
-                <Button
-                  onFocus={() => setDeletePost(post.id)}
-                  onClick={() => handleClick()}
-                >
-                  Supprimer
-                </Button>
+              {post.imageUrl ? (
+                <Link to={`/post/${post.id}`}>
+                  <img src={post.imageUrl} />
+                </Link>
+              ) : (
+                <Link to={`/post/${post.id}`}>
+                  <p>{post.description}</p>
+                </Link>
               )}
+
               <div>
-                <ChatBubbleIcon />
-                {counterAction.map((counter) => (
-                  <p>{counter.count}</p>
-                ))}
+                {post.user_id === userOnline && (
+                  <Button
+                    onFocus={() => setDeletePost(post.id)}
+                    onClick={() => handleClick()}
+                  >
+                    Supprimer
+                  </Button>
+                )}
+                <div>
+                  <ChatBubbleIcon />
+                  {counterAction.map((counter) => (
+                    <p>{counter.count}</p>
+                  ))}
                 </div>
               </div>
             </PostContainer>

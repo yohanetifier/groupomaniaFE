@@ -12,7 +12,6 @@ import  Typography  from '@material-ui/core/Typography'
 import {blue } from '@material-ui/core/colors'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-/* import MoreVertIcon from '@material-ui/icons/MoreVert' */
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +21,6 @@ const useStyles = makeStyles((theme) => ({
     height: '300px',
     paddingTop: '56,25%', 
   }, 
-  avatar: {
-    backgroundColor: blue[500]
-  }
 }))
 
 const MainContainer = styled.div`
@@ -98,24 +94,6 @@ const ImgAvatar = styled.img`
 width: 100%;
 height: 100%; 
 `
-
-/* const AddImage = styled.button`
-  display: inline-block;
-  background: #303F9F;
-  color: white;
-  border: 1px solid #999;
-  border-radius: 3px;
-  padding: 5px 8px;
-  outline: none;
-  opacity: 1; 
-  white-space: nowrap;
-  -webkit-user-select: none;
-  font-weight: 300;
-  font-size: 10pt;
-  width: 100%; 
-  cursor: pointer;
-` */
-
 function Post() {
 
   const classes = useStyles()
@@ -128,11 +106,15 @@ function Post() {
   const resetFile = useRef('')
   const id = useParams()
 
+  /* Fonction pour reset les inputs et la photo */
+
   const handleResetInput = () => {
     resetInput.current.value = ''
     resetFile.current.value = ''
     setPreview('')
   }
+
+  /* Appel pour récupérer les données de l'utilisateur par rapport à son id */
 
   useEffect(() => {
     fetch(`http://localhost:3000/api/auth/update/` + id.id, {
@@ -147,17 +129,22 @@ function Post() {
     )
   }, [id])
 
+  /* Fonction pour stocker le fichier et le preview */
+
   const handleChange = (e) => {
     const files = e.target.files[0]
     setImg(files)
     const img = URL.createObjectURL(files)
     setPreview(img)
   }
-
+  /* Fonction pour avoir la description */
+  
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value)
   }
   
+  /* Fonction pour envoyer les données sur le serveur */
+
   const onSubmit = (data) => {
     const formData = new FormData()
     formData.append('description', data.description)
@@ -186,12 +173,8 @@ function Post() {
       <Card className={classes.root}>
           <CardHeader
           avatar = {
-            <Avatar className = {classes.avatar}>
-              {/* {userDatas.prenom ? userDatas.prenom.slice(0,1).toUpperCase() : userDatas.prenom} */}
-              {/* {preview ? (<Img src={preview}/>) : (userDatas.avatar)} */}
-              {userDatas.avatar && <ImgAvatar src={userDatas.avatar}/>}
-              
-              
+            <Avatar >
+              {userDatas.avatar && <ImgAvatar src={userDatas.avatar}/>} 
             </Avatar>
           }
           title={`${userDatas.prenom} ${userDatas.nom}`}
@@ -209,7 +192,6 @@ function Post() {
            </Card>
         
         <FirstContainer>
-          {/* <Img src={preview} /> */}
           <Form onSubmit={handleSubmit(onSubmit)} method='POST'>
             <ThirdContainer>
             <Button variant="contained" color="primary">Selectionner une image</Button>

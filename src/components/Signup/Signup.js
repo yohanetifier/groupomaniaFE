@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
 import { useHistory, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import Button from '@material-ui/core/Button'
 import logo from '../../assets/logos/icon-left-font-monochrome-black.png'
 
@@ -9,8 +10,8 @@ const Img = styled.img`
   text-align: center;
 `
 const ContainerLogo = styled.div`
-display: flex; 
-justify-content: center;
+  display: flex;
+  justify-content: center;
 `
 
 const MainContainer = styled.div`
@@ -34,6 +35,12 @@ const Form = styled.form`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  & > p {
+    margin-left: 20px; 
+    color: red; 
+
+
+  }
 `
 const Label = styled.label`
   width: 100%;
@@ -47,6 +54,10 @@ const Input = styled.input`
   border: 1px solid #dddfe2;
   border-radius: 5px;
   outline-style: none;
+  &:valid{
+    border-bottom: 2px solid green; 
+  }
+
 `
 const ButtonSubmit = styled(Button)`
   width: 90%;
@@ -77,6 +88,7 @@ const ContainerButton = styled.div`
   justify-content: center;
 `
 
+
 const authentication = {
   isLoggedIn: false,
   onAuthentication() {
@@ -88,14 +100,22 @@ const authentication = {
 }
 
 function Signup() {
+  const [userDatas, setUserDatas] = useState([])
   const history = useHistory()
+  const [inputValue, setInputValue] = useState('')
 
+  useEffect(() => {
+    fetch('http://localhost:3000/api/auth/users')
+      .then((res) => res.json())
+      .then((result) => setUserDatas(result))
+  }, [])
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm()
   const onSubmit = (data) => {
+    
     fetch('http://localhost:3000/api/auth/signup', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -136,10 +156,6 @@ function Signup() {
       })
   }
 
-  /* const password = document.getElementById('password').value
-    const confirmpassword = document.getElementById('confirmpassword').value
-    const match = password === confirmpassword */
-
   return (
     <MainContainer>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -154,37 +170,52 @@ function Signup() {
           <Label>Nom: </Label>
           <Input
             type="text"
+           pattern='^[a-zA-Z]{3,20}$'
+            required
             {...register('nom', {
               required: true,
               pattern: /^[a-zA-Z]{3,20}$/,
             })}
           ></Input>
+          {errors.nom && <p>Ce champ doit contenir entre 3 à 20 caractères</p>}
         </Container>
         <Container>
           <Label>Prénom: </Label>
           <Input
             type="text"
+            pattern='^[a-zA-Z]{3,20}$'
+            required
             {...register('prenom', {
               required: true,
               pattern: /^[a-zA-Z]{3,20}$/,
             })}
           ></Input>
+          {errors.prenom && <p>Ce champ doit contenir entre 3 à 20 caractères</p>}
         </Container>
         <Container>
           <Label>Mail: </Label>
           <Input
             type="text"
+            pattern="^([\w.]+)@((?:[\w]+\.)+)([a-zA-Z]{2,4})$"
+            required
             {...register('mail', {
               required: true,
-              pattern: /^([\w-.]+)@((?:[\w]+\.)+)([a-zA-Z]{2,4})$/i,
+              pattern: /^([\w.]+)@((?:[\w]+\.)+)([a-zA-Z]{2,4})$/i,
             })}
+            onChange={(e) => setInputValue(e.target.value)}
           ></Input>
+          {userDatas.length > 0 && userDatas.map((user) => (
+            inputValue === user.email && <p>Ce compte existe déjà</p>
+          ))}
+          {errors.mail && <p>Veuillez rentrer une adresse mail valide</p>}
         </Container>
         <Container>
           <Label>Mot de passe: </Label>
           <Input
             id="password"
             type="password"
+            required
+            pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$'
             {...register('password', {
               required: true,
               pattern:
@@ -197,12 +228,13 @@ function Signup() {
           <Input
             id="confirmpassword"
             type="password"
+            required
+            pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$'
             {...register('confirmpassword', { required: true })}
           ></Input>
-          {/* {!match && <span>Password not matched</span>} */}
         </Container>
         <ContainerButton>
-          <ButtonSubmit type="submit" variant="contained" color="primary" >
+          <ButtonSubmit type="submit" variant="contained" color="primary">
             S'inscrire
           </ButtonSubmit>
         </ContainerButton>

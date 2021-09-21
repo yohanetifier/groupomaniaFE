@@ -60,7 +60,7 @@ function SearchBar() {
   const handleFilter = (e) => {
     const searchWord = e.target.value
     const newFilter = allUser.filter((value) => {
-        return value.prenom === searchWord 
+        return value.prenom === searchWord
     })
     setFilteredData(newFilter)
   }

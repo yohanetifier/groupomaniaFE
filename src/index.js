@@ -39,7 +39,6 @@ ReactDOM.render(
         <SecuredRoute path="/updateprofile/:id">
           <UpdateProfile />
         </SecuredRoute>
-        {/* </Switch> */}
         <SecuredRoute path="/deleteprofile/:id">
           <DeleteProfile />
         </SecuredRoute>
@@ -53,7 +52,7 @@ ReactDOM.render(
           <PostCard />
         </SecuredRoute>
         <Route path="*">
-          <Redirect to="/login" />
+          <Redirect to="/" />
         </Route>
       </Switch>
     </Router>

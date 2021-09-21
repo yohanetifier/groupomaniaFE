@@ -23,6 +23,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import SendIcon from '@material-ui/icons/Send'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 
 const rotate = keyframes`
     from {
@@ -51,14 +54,26 @@ const useStyles = makeStyles((theme) => ({
     height: '300px',
     paddingTop: '56,25%',
   },
-  avatar: {
-    backgroundColor: blue[500],
-  },
   author: {
     fontWeight: 'bold',
     color: 'black',
     textDecoration: 'none',
   },
+  interaction: {
+    display: 'flex', 
+    alignItems: 'center',
+    borderTop: '1px solid grey',
+    position: 'relative', 
+    right: '3px',
+  }, 
+  comments: {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  },
+  favoriteIcon: {
+  color: 'red'
+  }
 }))
 
 const Container = styled.div`
@@ -108,23 +123,55 @@ const ContainerUsersPlatform = styled(Link)`
 `
 const ContainerLeft = styled.div`
   width: 65%;
-  height: 100%;
+  height: 500px;
+  overflow:scroll;
+  scrollbar: none; 
   @media (max-width: 900px) {
     width: 100%;
   }
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; 
+  overflow: -moz-scrollbars-none; 
 `
 
 const Form = styled.form`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  & input {
+    width: 50%;
+    border: none; 
+    outline: none;
+  } 
+  & button {
+    background-color: white;
+    border: none; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    padding: 0px; 
+  }
+`
+
+/* & div {
+  border: 2px solid red; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  & > input {
+    width: 50%; 
+    border: none; 
+    outline: none; 
+  } */
+
+/* justify-content: space-between;
   align-items: center;
   border-top: 1px solid grey;
   & > input {
     width: 50%;
     border: none; 
     outline: none;
-  }
-`
+  } */
 
 const SubmitButton = styled(Button)`
   width: 20%;
@@ -174,6 +221,7 @@ function Home() {
   const [deletePost, setDeletePost] = useState()
   const [comments, setComments] = useState('')
   const [isLoading, setLoading] = useState(false)
+  const [like, setLike ] = useState(false)
   const textInput = useRef(null)
   const MobileDesign = useMediaQuery('(max-width: 600px)')
   const newPublication = () => {
@@ -195,6 +243,7 @@ function Home() {
     setAnchorEl(null)
   }
 
+
   useEffect(() => {
     fetch(`http://localhost:3000/api/auth/users/`, {
       headers: {
@@ -207,6 +256,8 @@ function Home() {
         .catch((error) => console.log(error))
     )
   })
+
+  /* Appel pour les données de l'utilisateur par rapport à son identifiant */
 
   useEffect(() => {
     setLoading(true)
@@ -223,6 +274,8 @@ function Home() {
     setLoading(false)
   }, [id])
 
+  /* Appel pour avoir tous les posts  */
+
   useEffect(() => {
     setLoading(true)
     fetch('http://localhost:3000/api/post/', {
@@ -234,6 +287,8 @@ function Home() {
       .then((res) => setPost(res))
     setLoading(false)
   }, [posts])
+
+  /* Appel pour avoir tous les commentaires */
 
   useEffect(() => {
     setLoading(true)
@@ -247,6 +302,7 @@ function Home() {
     setLoading(false)
   }, [actions])
 
+  /* Appel pour supprimer un post quand on appuie sur le bouton supprimer */
   const handleClick = () => {
     setLoading(true)
     fetch(`http://localhost:3000/api/post/delete/` + deletePost, {
@@ -259,7 +315,11 @@ function Home() {
       .then((result) => console.log(result))
     setLoading(false)
   }
+  /* Selection de l'input pour faire un reset */
+  
   const inputText = document.querySelectorAll('input')
+
+  /* Appel pour stocker la création du commentaire dans la bdd */
 
   const onSubmit = (data) => {
     setLoading(true)
@@ -286,6 +346,16 @@ function Home() {
     setLoading(false)
   }
 
+  const getLike = (data) => {
+    like ? 
+    (setLike(false)) 
+    : 
+    (
+      setLike(true))
+  }
+
+
+
   return (
     <div>
       <Header />
@@ -295,16 +365,6 @@ function Home() {
           <Logo src={icon} />
         </LoaderContainer>
       ) : (
-        /* <NoPostContainer>
-          <NoPost>Commencer à intéragir avec la communauté</NoPost>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => newPublication()}
-          >
-            Créer une nouvelle publication
-          </Button>
-        </NoPostContainer> */
         <Container>
           <ContainerLeft>
             {posts.map((post) => (
@@ -312,7 +372,7 @@ function Home() {
                 <Card className={classes.root}>
                   <CardHeader
                     avatar={
-                      <Avatar className={classes.avatar}>
+                      <Avatar >
                         {post.user.avatar && (
                           <ImgAvatar src={post.user.avatar} />
                         )}
@@ -349,25 +409,6 @@ function Home() {
                             <MoreVertIcon color="primary"></MoreVertIcon>
                           </Link>
                         )}
-                        {/*  <Menu
-                      id="simple-menu"
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={closeMenu}
-                    >
-                      <MenuItem onClose={closeMenu}></MenuItem>
-                      {userDatas.admin && (
-                        <MenuItem onClose={closeMenu}>
-                          <RemovePost
-                            onFocus={() => setDeletePost(post.id)}
-                            onClick={() => handleClick(post.id)}
-                          >
-                            Supprimer
-                          </RemovePost>
-                        </MenuItem>
-                      )}
-                    </Menu> */}
                       </div>
                     }
                     title={
@@ -387,7 +428,7 @@ function Home() {
                     />
                   )}
 
-                  <CardContent>
+                  <CardContent >
                     <Typography
                       variant="body2"
                       color="textprimary"
@@ -398,7 +439,15 @@ function Home() {
                       </span>{' '}
                       {post.description}
                     </Typography>
+                    
                     <Form onSubmit={handleSubmit(onSubmit)}>
+                      <div className={classes.interaction}>
+                        <button onClick={getLike} onFocus={(e) => setPost(post.id)}>
+                          {like ? (<FavoriteIcon color="primary" />) : (<FavoriteBorderIcon color="primary"/>)}
+                          </button>
+                        <span>1</span>
+                    </div>
+                    <div className={classes.comments}>
                       <p>😃</p>
                       <input
                         id={postId}
@@ -410,7 +459,6 @@ function Home() {
 
                       <SubmitButton
                         type="submit"
-                        disabled={comments ? '' : 'true'}
                       >
                         {MobileDesign ? (
                           <SendIcon color="primary" />
@@ -418,53 +466,10 @@ function Home() {
                           'Publier'
                         )}
                       </SubmitButton>
+                      </div>
                     </Form>
                   </CardContent>
                 </Card>
-
-                {/* <SecondContainer>
-              <ThirdContainer>
-                <Avatar src={post.user.avatar ? post.user.avatar : client} />
-                <p>
-                  {post.user.prenom} {post.user.nom}
-                </p>
-                {userDatas.admin && (
-                  <button
-                    onFocus={() => setDeletePost(post.id)}
-                    onClick={() => handleClick(post.id)}
-                  >
-                    Supprimer
-                  </button>
-                )}
-              </ThirdContainer>
-              {post.imageUrl && <Img src={post.imageUrl} />}
-              {/* <Img src={post.imageUrl} /> 
-              <FourthContainer>
-                <p>
-                  {post.user.prenom} {post.user.nom}{' '}
-                </p>
-                <Description>{post.description}</Description>
-              </FourthContainer>
-              <Form onSubmit={handleSubmit(onSubmit)}>
-                <p>😃</p>
-                <InputText
-                  onChange={(e) => setComments(e.target.value)}
-                  onFocus={(e) => setPostId(post.id)}
-                  placeholder="Ajouter un commentaire..."
-                  required
-                ></InputText>
-
-                <input type="submit" />
-                {actions.map((action) =>
-                  action.post_id === post.id && !postIdArray.includes(post.id)
-                    ? postIdArray.push(post.id)
-                    : null
-                )}
-                {postIdArray.includes(post.id) && (
-                  <Link to={`/post/${post.id}`}>Voir les commentaires</Link>
-                )}
-              </Form>
-            </SecondContainer> */}
               </MainContainer>
             ))}
           </ContainerLeft>
@@ -475,7 +480,7 @@ function Home() {
                 {userDatas.prenom} {userDatas.nom}
               </p>
             </ContainerUser>
-            {users.length > 0 && <h2>Suggestions pour vous</h2>}
+            {users.length >= 2 && <h2>Suggestions pour vous</h2>}
             {realUsers.map((user) => (
               <ContainerUsersPlatform to={`/profile/${user.id}`}>
                 <Avatar src={user.avatar} />

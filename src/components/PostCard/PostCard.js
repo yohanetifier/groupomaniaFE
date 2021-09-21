@@ -4,16 +4,17 @@ import styled from 'styled-components'
 import Header from '../Header/Header'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import DeleteIcon from '@material-ui/icons/Delete'
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Avatar from '@material-ui/core/Avatar'
 
 const MainContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-`
-
-const SecondContainer = styled.div`
-  border: 1px solid #dddfe2;
+  margin-top: 20px; 
+  &  > div {
+    border: 1px solid #dddfe2;
   display: flex;
   height: 100%;
   width: 70%;
@@ -21,6 +22,7 @@ const SecondContainer = styled.div`
   @media (max-width: 600px) {
     flex-direction: column;
     width: 100%;
+  }
   }
 `
 
@@ -38,34 +40,35 @@ const FourthContainer = styled.div`
   height: 50%;
   display: flex;
   border-bottom: 1px solid #dddfe2;
-`
-const Avatar = styled.div`
-  display: flex;
+  & > div {
+    display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #2296f3;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   margin-right: 10px;
   margin-left: 20px;
+  }
+  & > p {
+    font-weight: bold; 
+  }
 `
+
 const Img = styled.img`
   width: 100%;
   height: 100%;
 `
+
 const FifthContainer = styled.div`
   height: 50%;
 `
 const SixContainer = styled.div`
   width: 50%;
+  height: 100%; 
   @media (max-width: 600px) {
     width: 100%;
   }
-`
-const SeventhContainer = styled.div`
-  display: flex;
-  flex-direction: column;
 `
 const Description = styled.p`
   display: flex;
@@ -78,6 +81,7 @@ const Comments = styled.p`
   display: flex;
   align-items: center;
   margin-left: 20px;
+  
 `
 const Comment = styled.span`
   font-weight: 200;
@@ -147,21 +151,19 @@ function PostCard() {
 
   return (
     <div>
-      <Header />,
+      <Header />
       {isLoading ? (
         <p>Loading</p>
       ) : (
         datas.map((data) => (
           <MainContainer>
-            <SecondContainer>
+            <div>
               <ThirdContainer>
                 <FourthContainer>
                   <Avatar>
-                    {data.user.avatar ? (
+                    {data.user.avatar && (
                       <Img src={data.user.avatar} />
-                    ) : (
-                      data.user.prenom.slice(0, 1).toUpperCase()
-                    )}
+                    ) }
                   </Avatar>
                   <p>
                     {data.user.prenom} {data.user.nom}{' '}
@@ -190,7 +192,7 @@ function PostCard() {
                   </Description>
                 )}
 
-                <SeventhContainer>
+                <div>
                   {actions.map((action) => (
                     <Comments key={action.comment_id}>
                       {' '}
@@ -212,9 +214,9 @@ function PostCard() {
                       ) : null}
                     </Comments>
                   ))}
-                </SeventhContainer>
+                </div>
               </SixContainer>
-            </SecondContainer>
+            </div>
           </MainContainer>
         ))
       )}

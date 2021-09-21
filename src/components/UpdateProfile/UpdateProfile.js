@@ -120,20 +120,6 @@ const StyledTab = styled(Tab)`
   border: 2px solid purple;
 `
 
-/* const Label = styled.label`
-  width: 10%;
-`
-
-const Textarea = styled.textarea`
-  width: 70%;
-` */
-
-/* const SubmitButton = styled.button`
-  width: 40%;
-  height: 5%;
-  margin-left: 50px;
-` */
-
 const SeventhContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,12 +129,6 @@ const SeventhContainer = styled.div`
   }
 `
 
-/* const OldBio = styled.div`
-  margin-right: 10px;
-`
-const Mail = styled.p`
-  margin-right: 10px;
-` */
 const EightContainer = styled.div`
   text-align: center;
 `
@@ -425,7 +405,6 @@ function UpdateProfile() {
             <ThirdContainer onSubmit={handleSubmit(onSubmit)}>
               <FourthContainer>
                 <Img src={preview ? preview : userDatas.avatar} />
-                {/* <Img src={preview ? preview : userDatas.prenom.charAt(0).toUpperCase()} /> */}
                 <FifthContainer>
                   <h1>
                     {userDatas.prenom} {userDatas.nom}
@@ -524,33 +503,6 @@ function UpdateProfile() {
               </NineContainer>
             </ThirdContainer>
           </StyledTabPanel>
-          {/* <FourthContainer>
-            <Img src={preview ? preview : userDatas.avatar} />
-            <FifthContainer>
-              <h1>
-                {userDatas.prenom} {userDatas.nom}
-              </h1>
-              <input
-                type="file"
-                accept="image/*"
-                {...register('avatar')}
-                onChange={(e) => handleChange(e)}
-              ></input>
-            </FifthContainer>
-          </FourthContainer> 
-          <SixthContainer>
-            <Mail>Mail: </Mail>
-            <p>{userDatas.email}</p>
-          </SixthContainer>
-          <SeventhContainer>
-            <OldBio>Ancienne bio: </OldBio>
-            <p>{userDatas.bio}</p>
-          </SeventhContainer>
-          <SixthContainer>
-            <Label>bio</Label>
-            <Textarea type="text" {...register('bio')}></Textarea>
-          </SixthContainer>
-          <SubmitButton type="submit">Envoyer</SubmitButton> */}
         </MainContainer>
       </Container>
     </div>
@@ -558,9 +510,3 @@ function UpdateProfile() {
 }
 
 export default UpdateProfile
-
-{
-  /* <Link>Modifier le profil</Link>
-          <Link to={`/changepassword/${id.id}`}>changer le mot de passe</Link>
-          <Link to={`/deleteprofile/${id.id}`}>Supprimer mon compte</Link> */
-}

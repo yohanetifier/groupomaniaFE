@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
 import { useHistory, Route, Redirect, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import Button from '@material-ui/core/Button'
 import Alert from '@material-ui/lab/Alert'
 import logo from '../../assets/logos/icon-left-font-monochrome-black.png'
@@ -44,6 +45,9 @@ const Input = styled.input`
   border: 1px solid #dddfe2;
   border-radius: 5px;
   outline-style: none;
+  &:invalid{
+    border: 2px solid red; 
+  }
 `
 
 const ButtonSubmit = styled(Button)`
@@ -89,24 +93,6 @@ const ContainerOr = styled.p`
   width: 10%;
   text-align: center;
 `
-
-/* const authentication = {
-  isLoggedIn: false,
-  onAuthentication() {
-    this.isLoggedIn = true
-  },
-  getLoginStatus() {
-    return this.isLoggedIn
-  },
-}
-
-export function SecuredRoute({ children, ...rest }) {
-  if (localStorage.getItem('token')) {
-    return <Route {...rest}>{children}</Route>
-  } else {
-    return <Redirect to="/login"></Redirect>
-  }
-} */
 
 function Login() {
   const { register, handleSubmit } = useForm()
@@ -167,7 +153,7 @@ function Login() {
           ></Input>
         </Container>
         <ContainerButton>
-          <ButtonSubmit type="submit" color="primary" variant="contained">
+          <ButtonSubmit type="submit" color="primary" variant="contained" >
             Se connecter
           </ButtonSubmit>
         </ContainerButton>
