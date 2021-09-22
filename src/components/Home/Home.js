@@ -222,6 +222,7 @@ function Home() {
   const [comments, setComments] = useState('')
   const [isLoading, setLoading] = useState(false)
   const [like, setLike ] = useState(false)
+  const [allLike, setAllLike] = useState([])
   const textInput = useRef(null)
   const MobileDesign = useMediaQuery('(max-width: 600px)')
   const newPublication = () => {
@@ -255,7 +256,7 @@ function Home() {
         .then((users) => setUsers(users))
         .catch((error) => console.log(error))
     )
-  })
+  }, [])
 
   /* Appel pour les données de l'utilisateur par rapport à son identifiant */
 
@@ -272,7 +273,7 @@ function Home() {
         .catch((error) => console.log(error))
     )
     setLoading(false)
-  }, [id])
+  }, [])
 
   /* Appel pour avoir tous les posts  */
 
@@ -286,7 +287,7 @@ function Home() {
       .then((res) => res.json())
       .then((res) => setPost(res))
     setLoading(false)
-  }, [posts])
+  }, [])
 
   /* Appel pour avoir tous les commentaires */
 
@@ -300,7 +301,7 @@ function Home() {
       .then((res) => res.json())
       .then((result) => setActions(result))
     setLoading(false)
-  }, [actions])
+  }, [])
 
   /* Appel pour supprimer un post quand on appuie sur le bouton supprimer */
   const handleClick = () => {
@@ -346,14 +347,61 @@ function Home() {
     setLoading(false)
   }
 
-  const getLike = (data) => {
-    like ? 
-    (setLike(false)) 
-    : 
-    (
-      setLike(true))
+  
+
+  const getLike = () => {
+    if (like){
+      setLike(false)
+      const data = {}; 
+      data.like = 0
+      data.userId = localStorage.getItem('userId')
+      fetch(`http://localhost:3000/api/post/like/${postId}`, {
+        method: 'POST', 
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json', 
+          Accept: 'application/json',
+          Authorization: 'Bearer' + localStorage.getItem('token'),
+        }, 
+      }).then((function(res){
+        if(res.ok){
+          return res.json()
+        }
+      })
+      ).then(result => console.log(result))
+      .catch(error => console.log(error))
+    }else {
+      setLike(true)
+      const data = {}; 
+      data.like = 1
+      data.userId = localStorage.getItem('userId')
+      fetch(`http://localhost:3000/api/post/like/${postId}`, {
+        method: 'POST', 
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json', 
+          Accept: 'application/json', 
+          Authorization: 'Bearer' + localStorage.getItem('token'),
+        }, 
+      }).then((function(res){
+        if(res.ok){
+          return res.json()
+        }
+      })
+      ).then(result => console.log(result))
+      .catch(error => console.log(error))
+    }
   }
 
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/post/like/bypost`, {
+      headers: { 
+        'Content-Type': "application/json", 
+        Accept: "application/json", 
+      },
+    }).then((res) => res.json())
+    .then((result) => setAllLike(result))
+  }, [allLike])
 
 
   return (
@@ -442,10 +490,15 @@ function Home() {
                     
                     <Form onSubmit={handleSubmit(onSubmit)}>
                       <div className={classes.interaction}>
-                        <button onClick={getLike} onFocus={(e) => setPost(post.id)}>
-                          {like ? (<FavoriteIcon color="primary" />) : (<FavoriteBorderIcon color="primary"/>)}
+                        <button onClick={getLike} onFocus={() => setPostId(post.id)}>
+                          { allLike.length === 0 ? (<FavoriteBorderIcon color="primary"/>) : (allLike.map((like) => (
+                           like.user_id === JSON.parse(localStorage.getItem('userId')) ? (<FavoriteIcon color="primary" />) : (<FavoriteBorderIcon color="primary"/>)
+                          )))}
+                          {/* {allLike.map((like) => (
+                           like.user_id === JSON.parse(localStorage.getItem('userId')) ? (<FavoriteIcon color="primary" />) : (<FavoriteBorderIcon color="primary"/>)
+                          ))} */}
                           </button>
-                        <span>1</span>
+                        <span>{post.likes}</span>
                     </div>
                     <div className={classes.comments}>
                       <p>😃</p>
